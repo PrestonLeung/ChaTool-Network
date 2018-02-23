@@ -62,7 +62,8 @@ if __name__ == '__main__':
     btwnRank = network.betweenness(weights=network.es['1-MI'],directed=False)
     clsnsRank = network.closeness(weights=network.es['1-MI'])
     infRank = cnf.infRankMatch(args.inf_file, network, '\t')
-    
+    chatuRank = cnf.chatuRankAll(network, 'MI', 50,True)
+
     print "Stage 1: Removing nodes according to Eigen Vector Centrality."
     cnf.nodeRemove(network, evcScore, args.output+"_evcRankRemove.txt", '1-MI')
     print "Stage 2: Removing nodes according to Degree Rank."
@@ -75,7 +76,9 @@ if __name__ == '__main__':
     cnf.nodeRemove(network, clsnsRank, args.output+"_clsnsRankRemove.txt", '1-MI')
     print "Stage 6: Removing nodes according to Influential Rank."
     cnf.nodeRemove(network, infRank, args.output+"_infRankRemove.txt", '1-MI', isInfRank = True)
-    print "Stage 7: Removing nodes according to Random Selection, repeat {} times.".format(Rounds)
+    print "Stage 7: Removing nodes according to CR Rank."
+    cnf.nodeRemove(network, chatuRank, args.output+"_chaturankRemove.txt", '1-MI')
+    print "Stage 8: Removing nodes according to Random Selection, repeat {} times.".format(Rounds)
     cnf.testRandom(network,args.output+"_randomRemove",'1-MI',Rounds) 
     
     startAvgPathLen = network.average_path_length()

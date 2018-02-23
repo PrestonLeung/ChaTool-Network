@@ -36,6 +36,7 @@ avgMIRank = read.delim(paste(sep='',location,"_avgMIRankRemove.txt"), header=TRU
 btwnRank = read.delim(paste(sep='',location,"_btwnsRankRemove.txt"), header=TRUE)
 clsnRank = read.delim(paste(sep='',location,"_clsnsRankRemove.txt"), header=TRUE)
 infRank = read.delim(paste(sep='',location,"_infRankRemove.txt"), header=TRUE)
+chatuRank = read.delim(paste(sep='',location,"_chaturankRemove.txt"), header=TRUE)
 randomSuffix = "_randomRemove"
 
 firstPlot = TRUE
@@ -48,7 +49,7 @@ for (i in 0:(randomCount-1)){
   randomRank = read.delim(randFile, header=TRUE)
   if(firstPlot){
     #print('Here')
-    plot(randomRank$AvgShortestPath, col='green', xlab = "No. of Nodes Removed", ylab='Avg Shortest Path (weighted)', ylim=c(1.9,2.8), main = "Breaking the viral mutation network", type='n')
+    plot(randomRank$AvgShortestPath, col='green', xlab = "No. of Nodes Removed", ylab='Avg Shortest Path',ylim=c(1.9,2.8), type='n')
     firstPlot = FALSE
   }
   points(randomRank$AvgShortestPath, col='green')
@@ -59,13 +60,14 @@ points(degRank$AvgShortestPath, col='hotpink2')
 points(evcRank$AvgShortestPath, col='black')
 points(avgMIRank$AvgShortestPath, col='orange')
 points(btwnRank$AvgShortestPath, col='cyan3')
+points(chatuRank$AvgShortestPath, col='blue')
 points(infRank$AvgShortestPath, col='red')
 
 
-legend(x=plot1Pos, # places a legend at the appropriate place 
-       c('Closeness Centrality','Degree','EVC','AvgMIRank', 'Betweenness Centrality', 'Influential Rank', 'Random'), # puts text in the legend
+legend(x=plot1Pos, bty = "n", # places a legend at the appropriate place 
+       c('Closeness Centrality','Degree','EVC','NAMI', 'Betweenness Centrality', 'INFR','CR', 'Random'), # puts text in the legend
        lty=c(1), # gives the legend appropriate symbols (lines)
-       lwd=c(5),col=c('darkorchid3','hotpink2','black','orange','cyan3','red','green')) # gives the legend lines the correct color and width
+       lwd=c(5),col=c('darkorchid3','hotpink2','black','orange','cyan3','red','blue','green')) # gives the legend lines the correct color and width
 
 dev.off()
 
@@ -79,7 +81,7 @@ for (i in 0:(randomCount-1)){
   randomRank = read.delim(randFile, header=TRUE)
   if(firstPlot){
     #print('Here')
-    plot(randomRank$Diameter, col='green', xlab = "No. of Nodes Removed", ylab='Network Diameter (weighted)', ylim=c(0,20), main = "Breaking the viral mutation network", type='n')
+    plot(randomRank$Diameter, col='green', xlab = "No. of Nodes Removed", ylab='Network Diameter', ylim=c(0,25), type='n')
     firstPlot = FALSE
   }
   points(randomRank$Diameter, col='green')
@@ -90,11 +92,12 @@ points(degRank$Diameter, col='hotpink2')
 points(evcRank$Diameter, col='black')
 points(avgMIRank$Diameter, col='orange')
 points(btwnRank$Diameter, col='cyan3')
+points(chatuRank$Diameter, col='blue')
 points(infRank$Diameter, col='red')
 
-legend(x=plot2Pos, # places a legend at the appropriate place 
-       c('Closeness Centrality','Degree','EVC','AvgMIRank', 'Betweenness Centrality', 'Influential Rank', 'Random'), # puts text in the legend
+legend(x=plot2Pos, bty = "n",# places a legend at the appropriate place 
+       c('Closeness Centrality','Degree','EVC','NAMI', 'Betweenness Centrality', 'INFR','CR','Random'), # puts text in the legend
        lty=c(1), # gives the legend appropriate symbols (lines)
-       lwd=c(5),col=c('darkorchid3','hotpink2','black','orange','cyan3','red','green')) # gives the legend lines the correct color and width
+       lwd=c(5),col=c('darkorchid3','hotpink2','black','orange','cyan3','red','blue','green')) # gives the legend lines the correct color and width
 
 dev.off()
