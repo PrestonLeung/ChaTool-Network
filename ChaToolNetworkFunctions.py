@@ -23,13 +23,11 @@ def parseData(fileName, delim):
     pos_nodeID_dict = {}
     nodeID_pos_dict = {}
     pos_edgeID_dict = {}
-    g = ig.Graph()
-    
+    g = ig.Graph()    
     with open(fileName, 'rb') as csvfile:        
         fileHandle = csv.reader(csvfile, delimiter= delim)
         edgeID = 0    
-        nodeID = 0
-        
+        nodeID = 0        
         #Retrieve node (pos1,pos2) data and
         #edge data(pvalue, mi_weight, one_minus_mi)
         #Customise this part if needed.         
@@ -41,8 +39,7 @@ def parseData(fileName, delim):
             pos2 = row[1]
             mi_weight = row[2]
             pValue = row[3]
-            one_minus_mi = row[4]
-            
+            one_minus_mi = row[4]            
             # Dealing with 2 nodes, igraph nodeID is sequential
             # starts from 0 to n.
             if(pos1 not in pos_nodeID_dict.keys()):
@@ -56,17 +53,14 @@ def parseData(fileName, delim):
                 nodeID_pos_dict[nodeID] = pos2                
                 g.add_vertices(1)
                 g.vs[nodeID]['Position'] = pos2
-                nodeID += 1
-            
+                nodeID += 1            
             #Dealing with the edge between the 2 nodes            
             if((pos1,pos2) not in pos_edgeID_dict.keys()):
-                pos_edgeID_dict[(pos1,pos2)] = edgeID
-                
+                pos_edgeID_dict[(pos1,pos2)] = edgeID                
             #Stored the id of nodes of positions and
             #stored the id of edges between positions.
             #Time to add this edge into the graph.            
-            g.add_edges([(pos_nodeID_dict[pos1],pos_nodeID_dict[pos2])])
-            
+            g.add_edges([(pos_nodeID_dict[pos1],pos_nodeID_dict[pos2])])            
             #Add some attributes to the edge
             #Customise this part if needed.
             g.es[edgeID]['MI'] = float(mi_weight)
@@ -221,11 +215,9 @@ def randomiseEdge(network, weightAttr, nodeAttr):
     nodeList = network.vs[nodeAttr] #contains attribute info of nodes
     numNode = len(nodeList)
     numPotentialEdge = (numNode*(numNode-1))/2
-    edgeChance = float(numEdge)/numPotentialEdge
-    
+    edgeChance = float(numEdge)/numPotentialEdge    
     randG = network.copy()
-    randG.delete_edges(range(0,numEdge))
-    
+    randG.delete_edges(range(0,numEdge))    
     #Adding edge to graph randG randomly
     for i in range(0,numNode):
         j = i+1
@@ -237,7 +229,7 @@ def randomiseEdge(network, weightAttr, nodeAttr):
                 edgeID = randG.get_eid(i,j)
                 # randomly select a weight and add it
                 # to the edge
-                randWeight = weightDist[random.randint(0,numNode-1)]
+                randWeight = weightDist[random.randint(0,numEdge-1)]
                 randG.es[edgeID][weightAttr] = randWeight
             j+=1
     return randG
@@ -261,7 +253,8 @@ def nodeRemove(network, rankAttr, outFile, weightAttr, isInfRank = False):
     print "{}".format(outFile)
     
     with open(outFile, 'wb') as writeFile:
-        writeFile.write('Pos\tAvgPathLen\tAvgShortestPath\tDiameter\tRemainingNodes\n')
+        # writeFile.write('Pos\tAvgPathLen\tAvgShortestPath\tDiameter\tRemainingNodes\n')
+        writeFile.write('Pos\tAvgPathLen\tAvgShortestPath\tDiameter\tGiantComponent\tRemainingNodes\n')
         printCounter = 0    
         for pos in aaPosList:
             nodeID = [v.index for v in nw.vs.select(Position_eq=pos)][0]
@@ -271,6 +264,7 @@ def nodeRemove(network, rankAttr, outFile, weightAttr, isInfRank = False):
             if(len(nw.vs) >= 1):
                 writeFile.write('{}\t{}\t'.format(pos,nw.average_path_length()))
                 writeFile.write('{}\t{}\t'.format(avgShortestPath(nw,weightAttr),nw.diameter(weights=nw.es[weightAttr])))
+                writeFile.write('{}\t'.format(len(nw.components().giant().vs)))
                 writeFile.write('{}\n'.format(len(nw.vs)))
             else:
                 break
@@ -295,7 +289,7 @@ def randNodeRemove(network, outFile, weightAttr):
     print "{}".format(outFile)
     
     with open(outFile, 'wb') as writeFile:
-        writeFile.write('Pos\tAvgPathLen\tAvgShortestPath\tDiameter\tRemainingNodes\n')
+        writeFile.write('Pos\tAvgPathLen\tAvgShortestPath\tDiameter\tGiantComponent\tRemainingNodes\n')
         printCounter = 0    
         for pos in aaPosList:
             nodeID = [v.index for v in nw.vs.select(Position_eq=pos)][0]
@@ -305,6 +299,7 @@ def randNodeRemove(network, outFile, weightAttr):
             if(len(nw.vs) >= 1):
                 writeFile.write('{}\t{}\t'.format(pos,nw.average_path_length()))
                 writeFile.write('{}\t{}\t'.format(avgShortestPath(nw,weightAttr),nw.diameter(weights=nw.es[weightAttr])))
+                writeFile.write('{}\t'.format(len(nw.components().giant().vs)))
                 writeFile.write('{}\n'.format(len(nw.vs)))
             else:
                 break
@@ -320,7 +315,7 @@ def randNodeRemove(network, outFile, weightAttr):
 def avgShortestPath(network,attrName,replaceValue=False):
     if(replaceValue):
         for i in range(0,len(network.vs)):    
-            sPathList = network.shortest_paths(weights=nw.es[attrName], source = i)
+            sPathList = network.shortest_paths(weights=network.es[attrName], source = i)
             weightMatrix.append([replaceValue if x==float('inf') else x for x in sPathList])
     else:
         weightMatrix = network.shortest_paths(weights=network.es[attrName])
