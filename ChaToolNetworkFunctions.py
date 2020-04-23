@@ -313,6 +313,7 @@ def randNodeRemove(network, outFile, weightAttr):
 # Used in nodeRemove, returns a numpy float type value
 
 def avgShortestPath(network,attrName,replaceValue=False):
+    weightMatrix = []
     if(replaceValue):
         for i in range(0,len(network.vs)):    
             sPathList = network.shortest_paths(weights=network.es[attrName], source = i)
@@ -321,6 +322,12 @@ def avgShortestPath(network,attrName,replaceValue=False):
         weightMatrix = network.shortest_paths(weights=network.es[attrName])
     avgShortPath = np.sum(weightMatrix)/(len(weightMatrix)*(len(weightMatrix)-1))
     return avgShortPath
+
+# lighter version
+def avgShortestPathV2(nw,wAttr):
+    n = nw.shortest_paths(weights = wAttr)
+    n2 = [[x for x in i if x != float('inf')] for i in n]
+    return np.mean(sum(n2,[]))
 
 ######################### generate X rounds of random remove #########################
 
